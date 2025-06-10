@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using mythos_backend_dotnet.Data;
+using mythos_backend_dotnet.Entities;
+using mythos_backend_dotnet.Models;
+using System.Security.Claims;
 
 namespace mythos_backend_dotnet.Controllers
 {
@@ -7,5 +12,59 @@ namespace mythos_backend_dotnet.Controllers
     [ApiController]
     public class MythosTransactionController : ControllerBase
     {
+        private readonly MythosDbContext _context;
+
+        public MythosTransactionController(MythosDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET api/mythos-transactions (transacciones del usuario autenticado)
+        [HttpGet]
+        public async Task<ActionResult<List<MythosTransaction>>> GetUserTransactions()
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var transactions = await _context.MythosTransactions
+                .Where(t => t.AccountId == userId || t.CounterpartyAccountId == userId)
+                .OrderByDescending(t => t.CreatedAt).ToListAsync();
+
+            return Ok(transactions);
+        }
+
+        // POST api/mythos-transactions (crear una nueva transacción)
+        [HttpPost]
+        public async Task<IActionResult> CreateTransaction([FromBody] CreateMythosTransactionDto dto)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Validar saldo y existencia de cuentas
+            var sender = await _context.Accounts.FindAsync(userId);
+            var receiver = await _context.Accounts.FindAsync(dto.CounterpartyAccountId);
+
+            if (sender == null || receiver == null) return BadRequest("Cuentas inválidas");
+
+            // Aquí deberías validar saldo, etc. (esto es un ejemplo)
+            if (dto.Amount <= 0) return BadRequest("Monto inválido");
+
+            // TODO: Validar saldo suficiente
+
+            var newBalanceSender = 0; // Obtener saldo actualizado (falta lógica)
+
+            var transaction = new MythosTransaction
+            {
+                Type = dto.Type,
+                Amount = dto.Amount,
+                BalanceAfter = newBalanceSender,
+                CreatedAt = DateTime.UtcNow,
+                AccountId = sender.Id,
+                CounterpartyAccountId = receiver.Id,
+            };
+
+            _context.MythosTransactions.Add(transaction);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUserTransactions), new { id = transaction.MythosTransactionId }, transaction);
+        }
     }
 }

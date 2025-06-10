@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using mythos_backend_dotnet.Entities;
 using mythos_backend_dotnet.Models;
 using mythos_backend_dotnet.Services;
-using System.Threading.Tasks;
 
 namespace mythos_backend_dotnet.Controllers
 {

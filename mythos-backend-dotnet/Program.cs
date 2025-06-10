@@ -31,7 +31,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowDotnetFrontend", policy =>
+    {
+        policy.WithOrigins("https://localhost:7133").AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountService, AccountService>(); 
 
 var app = builder.Build();
 
@@ -42,6 +51,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowDotnetFrontend");
 
 app.UseAuthorization();
 
