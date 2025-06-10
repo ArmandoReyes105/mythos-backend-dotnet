@@ -103,9 +103,9 @@ namespace mythos_backend_dotnet.Services
         {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.Username),
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Role, user.Role)
+                new("username", user.Username),
+                new("accountId", user.Id.ToString()),
+                new("role", user.Role)
             };
 
             var key = new SymmetricSecurityKey(
