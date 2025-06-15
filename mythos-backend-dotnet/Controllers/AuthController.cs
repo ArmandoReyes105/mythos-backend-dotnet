@@ -12,7 +12,7 @@ namespace mythos_backend_dotnet.Controllers
     {
 
         [HttpPost("register")]
-        public async Task<ActionResult<Account>> Register(AccountDto request)
+        public async Task<ActionResult<Account>> Register(CreateAccountRequestDto request)
         {
             var user = await authService.RegisterAsync(request);
 

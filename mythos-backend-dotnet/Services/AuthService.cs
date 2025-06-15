@@ -30,7 +30,7 @@ namespace mythos_backend_dotnet.Services
             return await CreateTokenResponse(user);
         }
 
-        public async Task<Account?> RegisterAsync(AccountDto request)
+        public async Task<Account?> RegisterAsync(CreateAccountRequestDto request)
         {
 
             if(await context.Accounts.AnyAsync(a => a.Username == request.Username))
@@ -44,6 +44,8 @@ namespace mythos_backend_dotnet.Services
                 .HashPassword(account, request.Password);
 
             account.Username = request.Username;
+            account.Email = request.Email;
+            account.Role = "reader"; // Default role, can be changed later
             account.PasswordHash = hashedPassword;
 
             context.Accounts.Add(account);
