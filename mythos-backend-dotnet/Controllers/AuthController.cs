@@ -17,7 +17,7 @@ namespace mythos_backend_dotnet.Controllers
             var user = await authService.RegisterAsync(request);
 
             if (user is null)
-                return BadRequest("Username already exists.");
+                return BadRequest(new { message = "El nombre de usuario ya existe. Por favor intente con otro." });
 
             return Ok(user);
         }
@@ -30,19 +30,66 @@ namespace mythos_backend_dotnet.Controllers
             if (response is null)
                 return BadRequest("Invalid username or password.");
 
-            return Ok(response);
+            var accessTokenOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(1)
+            };
+
+            var refreshTokenOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+
+            Response.Cookies.Append("accessToken", response.AccessToken, accessTokenOptions);
+            Response.Cookies.Append("refreshToken", response.RefreshToken, refreshTokenOptions);
+
+            return Ok(new { message = "Login successful" });
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        public async Task<ActionResult> RefreshToken()
         {
-            var result = await authService.RefreshTokensAsync(request);
+            var refreshToken = Request.Cookies["refreshToken"];
+            var userIdString = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
 
-            if (result is null || result.AccessToken is null || result.RefreshToken is null)
+            if (string.IsNullOrEmpty(refreshToken) || string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return Unauthorized("Invalid refresh token or user.");
+            }
+
+            var result = await authService.RefreshTokensAsync(userId, refreshToken);
+
+            if (result is null)
                 return Unauthorized("Invalid refresh token.");
 
-            return Ok(result);
+            var accessTokenOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(1)
+            };
+
+            var refreshTokenOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+
+            Response.Cookies.Append("accessToken", result.AccessToken, accessTokenOptions);
+            Response.Cookies.Append("refreshToken", result.RefreshToken, refreshTokenOptions);
+
+            return Ok(new { message = "Token refreshed successfully" });
         }
+
 
         [Authorize]
         [HttpGet]

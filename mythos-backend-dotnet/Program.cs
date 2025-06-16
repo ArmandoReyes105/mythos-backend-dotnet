@@ -29,13 +29,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
             ValidateIssuerSigningKey = true
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.ContainsKey("accessToken"))
+                {
+                    context.Token = context.Request.Cookies["accessToken"];
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowDotnetFrontend", policy =>
     {
-        policy.WithOrigins("https://localhost:7133", "http://localhost:3000" ).AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("https://localhost:7133", "http://localhost:3000" ).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         
 
     });
@@ -56,6 +69,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowDotnetFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

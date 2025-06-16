@@ -7,6 +7,6 @@ namespace mythos_backend_dotnet.Services
     {
         Task<Account?> RegisterAsync(CreateAccountRequestDto request);
         Task<TokenResponseDto?> LoginAsync(AccountDto request);
-        Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request);
+        Task<TokenResponseDto?> RefreshTokensAsync(Guid userId, string refreshToken);
     }
 }

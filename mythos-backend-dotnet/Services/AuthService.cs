@@ -53,9 +53,9 @@ namespace mythos_backend_dotnet.Services
 
             return account;
         }
-        public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
+        public async Task<TokenResponseDto?> RefreshTokensAsync(Guid userId, string refreshToken)
         {
-            var user = await ValidateRefreshTokenAsync(request.UserId, request.RefreshToken);
+            var user = await ValidateRefreshTokenAsync(userId, refreshToken);
 
             if (user is null)
                 return null;
