@@ -22,6 +22,25 @@ namespace mythos_backend_dotnet.Controllers
             return Ok(account);
         }
 
+        [HttpGet()]
+        [Authorize]
+        public async Task<ActionResult<AccountResponseDto>> GetAccountByAccessTokenCookie()
+        {
+
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            if (accountIdClaim == null)
+                return Unauthorized("No se encontró el ID en el token");
+
+            var accountId = Guid.Parse(accountIdClaim.Value);
+
+            var account = await accountService.GetAccountByAccessTokenCookieAsync(accountId);
+
+            if (account == null)
+                return NotFound();
+
+            return Ok(account);
+        }
+
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult> UpdateAccount(Guid id, [FromBody] AccountDto model)
@@ -40,7 +59,7 @@ namespace mythos_backend_dotnet.Controllers
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim is null || userIdClaim != id.ToString())
-                return Forbid(); 
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -50,7 +69,7 @@ namespace mythos_backend_dotnet.Controllers
             if (!success)
                 return NotFound();
 
-            return NoContent(); 
+            return NoContent();
         }
     }
 }
