@@ -98,6 +98,15 @@ namespace mythos_backend_dotnet.Controllers
             return Ok("You are authenticated!");
         }
 
+        [Authorize]
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("accessToken");
+            Response.Cookies.Delete("refreshToken");
+            return Ok(new { message = "Logged out successfully" });
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpGet("admin-only")]
         public IActionResult AdminOnlyEndpoint()
