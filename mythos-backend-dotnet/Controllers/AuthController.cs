@@ -35,7 +35,7 @@ namespace mythos_backend_dotnet.Controllers
                 HttpOnly = true,
                 Secure = false,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddMinutes(1)
+                Expires = DateTime.UtcNow.AddDays(1)
             };
 
             var refreshTokenOptions = new CookieOptions
@@ -73,7 +73,7 @@ namespace mythos_backend_dotnet.Controllers
                 HttpOnly = true,
                 Secure = false,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddMinutes(1)
+                Expires = DateTime.UtcNow.AddDays(1)
             };
 
             var refreshTokenOptions = new CookieOptions
