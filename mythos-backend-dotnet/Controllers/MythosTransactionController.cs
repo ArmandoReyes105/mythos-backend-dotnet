@@ -71,24 +71,22 @@ namespace mythos_backend_dotnet.Controllers
             return CreatedAtAction(nameof(GetUserTransactions), new { id = transaction.MythosTransactionId }, transaction);
         }
 
-        // POST api/mythos-transaction/donate
         [HttpPost("donate")]
-        [Authorize(Roles = "Reader")]
+        [Authorize(Roles = "reader")]
         public async Task<IActionResult> Donate([FromBody] CreateDonationDto dto)
         {
-            var accountIdStr = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (accountIdStr == null)
-                return Unauthorized("No se puede identificar al usuario.");
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            if (accountIdClaim == null)
+                return Unauthorized("No se encontró el ID en el token");
 
-            if (!Guid.TryParse(accountIdStr, out Guid senderAccountId))
-                return Unauthorized("Identificador de usuario inválido.");
+            var senderAccountId = Guid.Parse(accountIdClaim.Value);
 
-            var (success, message) = await _transactionService.DonateAsync(senderAccountId, dto.ReceiverAccountId, dto.Amount);
+            var (success, message, response) = await _transactionService.DonateAsync(senderAccountId, dto);
 
             if (!success)
                 return BadRequest(message);
 
-            return Ok(message);
+            return Ok(response);
         }
     }
 }
