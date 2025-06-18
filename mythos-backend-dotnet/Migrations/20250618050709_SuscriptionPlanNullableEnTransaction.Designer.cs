@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mythos_backend_dotnet.Data;
 
@@ -11,9 +12,11 @@ using mythos_backend_dotnet.Data;
 namespace mythos_backend_dotnet.Migrations
 {
     [DbContext(typeof(MythosDbContext))]
-    partial class MythosDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250618050709_SuscriptionPlanNullableEnTransaction")]
+    partial class SuscriptionPlanNullableEnTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,35 +326,6 @@ namespace mythos_backend_dotnet.Migrations
                     b.HasIndex("SuscriptionPlanId");
 
                     b.ToTable("Transactions");
-                });
-
-            modelBuilder.Entity("mythos_backend_dotnet.Entities.Withdrawal", b =>
-                {
-                    b.Property<int>("WithdrawalId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WithdrawalId"));
-
-                    b.Property<decimal>("AmountRealMoney")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("RequestedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SubtractedMythras")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("WriterUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("WithdrawalId");
-
-                    b.ToTable("Withdrawals");
                 });
 
             modelBuilder.Entity("mythos_backend_dotnet.Entities.AccountSuscriptionPlan", b =>

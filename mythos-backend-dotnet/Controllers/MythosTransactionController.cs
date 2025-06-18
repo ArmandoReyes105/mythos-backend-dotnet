@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using mythos_backend_dotnet.Data;
 using mythos_backend_dotnet.Entities;
 using mythos_backend_dotnet.Models;
+using mythos_backend_dotnet.Services;
 using System.Security.Claims;
 
 namespace mythos_backend_dotnet.Controllers
@@ -13,10 +15,12 @@ namespace mythos_backend_dotnet.Controllers
     public class MythosTransactionController : ControllerBase
     {
         private readonly MythosDbContext _context;
+        private readonly IMythosTransactionService _transactionService;
 
-        public MythosTransactionController(MythosDbContext context)
+        public MythosTransactionController(MythosDbContext context, IMythosTransactionService transactionService)
         {
             _context = context;
+            _transactionService = transactionService;
         }
 
         // GET api/mythos-transactions (transacciones del usuario autenticado)
@@ -65,6 +69,24 @@ namespace mythos_backend_dotnet.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetUserTransactions), new { id = transaction.MythosTransactionId }, transaction);
+        }
+
+        [HttpPost("donate")]
+        [Authorize(Roles = "reader")]
+        public async Task<IActionResult> Donate([FromBody] CreateDonationDto dto)
+        {
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            if (accountIdClaim == null)
+                return Unauthorized("No se encontró el ID en el token");
+
+            var senderAccountId = Guid.Parse(accountIdClaim.Value);
+
+            var (success, message, response) = await _transactionService.DonateAsync(senderAccountId, dto);
+
+            if (!success)
+                return BadRequest(message);
+
+            return Ok(response);
         }
     }
 }

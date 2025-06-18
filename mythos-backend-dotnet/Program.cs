@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using mythos_backend_dotnet.Data;
+using mythos_backend_dotnet.Entities;
 using mythos_backend_dotnet.Services;
 using System.Text;
 
@@ -55,7 +56,12 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAccountService, AccountService>(); 
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IMythosTransactionService, MythosTransactionService>();
+builder.Services.AddScoped<IMythrasPurchaseService, MythrasPurchaseService>();
+builder.Services.AddScoped<IWithdrawalService, WithdrawalService>();
+builder.Services.AddScoped<IMythosWalletService, MythosWalletService>();
+builder.Services.AddScoped<IMythrasPackageService, MythrasPackageService>();
 
 var app = builder.Build();
 
