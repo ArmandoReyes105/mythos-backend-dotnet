@@ -20,7 +20,7 @@ namespace mythos_backend_dotnet.Services
                 Password = account.PasswordHash,
             };
         }
-        
+
         public async Task<AccountResponseDto?> GetAccountByAccessTokenCookieAsync(Guid id)
         {
             var account = await context.Accounts.FindAsync(id);
@@ -38,7 +38,7 @@ namespace mythos_backend_dotnet.Services
             };
         }
 
-        public async Task<AccountDto?> UpdateAccountAsync(Guid id, AccountDto model)
+        public async Task<EditProfileRequestDto?> UpdateAccountAsync(Guid id, EditProfileRequestDto model)
         {
             var account = await context.Accounts.FindAsync(id);
 
@@ -46,6 +46,7 @@ namespace mythos_backend_dotnet.Services
                 return null;
 
             account.Username = model.Username;
+            account.Email = model.Email;
 
             await context.SaveChangesAsync();
             return model;
@@ -64,7 +65,7 @@ namespace mythos_backend_dotnet.Services
 
             var result = await context.SaveChangesAsync();
 
-            return result > 0; 
+            return result > 0;
         }
     }
 }
