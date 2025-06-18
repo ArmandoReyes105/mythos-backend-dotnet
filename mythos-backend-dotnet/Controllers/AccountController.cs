@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using mythos_backend_dotnet.Models;
 using mythos_backend_dotnet.Services;
-using System.Security.Claims;
 
 namespace mythos_backend_dotnet.Controllers
 {
@@ -43,7 +42,7 @@ namespace mythos_backend_dotnet.Controllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult> UpdateAccount(Guid id, [FromBody] AccountDto model)
+        public async Task<ActionResult> UpdateAccount(Guid id, [FromBody] EditProfileRequestDto model)
         {
             var result = await accountService.UpdateAccountAsync(id, model);
 
@@ -57,8 +56,9 @@ namespace mythos_backend_dotnet.Controllers
         [Authorize]
         public async Task<ActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordRequest request)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim is null || userIdClaim != id.ToString())
+            //var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            if (userIdClaim is null || userIdClaim.Value != id.ToString())
                 return Forbid();
 
             if (!ModelState.IsValid)

@@ -6,7 +6,7 @@ namespace mythos_backend_dotnet.Services
     {
         Task<AccountDto?> GetAccountByIdAsync(Guid id);
         Task<AccountResponseDto?> GetAccountByAccessTokenCookieAsync(Guid id);
-        Task<AccountDto?> UpdateAccountAsync(Guid id, AccountDto model);
+        Task<EditProfileRequestDto?> UpdateAccountAsync(Guid id, EditProfileRequestDto model);
         Task<bool> ChangePasswordAsync(Guid id, ChangePasswordRequest request);
     }
 }
