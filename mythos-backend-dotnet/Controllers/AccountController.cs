@@ -56,7 +56,6 @@ namespace mythos_backend_dotnet.Controllers
         [Authorize]
         public async Task<ActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordRequest request)
         {
-            //var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
             if (userIdClaim is null || userIdClaim.Value != id.ToString())
                 return Forbid();
