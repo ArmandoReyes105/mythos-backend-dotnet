@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using mythos_backend_dotnet.Data;
 using mythos_backend_dotnet.Entities;
 using mythos_backend_dotnet.Models;
+using mythos_backend_dotnet.Services;
 using System.Security.Claims;
 
 namespace mythos_backend_dotnet.Controllers
@@ -13,10 +15,12 @@ namespace mythos_backend_dotnet.Controllers
     public class MythosTransactionController : ControllerBase
     {
         private readonly MythosDbContext _context;
+        private readonly IMythosTransactionService _transactionService;
 
-        public MythosTransactionController(MythosDbContext context)
+        public MythosTransactionController(MythosDbContext context, IMythosTransactionService transactionService)
         {
             _context = context;
+            _transactionService = transactionService;
         }
 
         // GET api/mythos-transactions (transacciones del usuario autenticado)
@@ -65,6 +69,26 @@ namespace mythos_backend_dotnet.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetUserTransactions), new { id = transaction.MythosTransactionId }, transaction);
+        }
+
+        // POST api/mythos-transaction/donate
+        [HttpPost("donate")]
+        [Authorize(Roles = "Reader")]
+        public async Task<IActionResult> Donate([FromBody] CreateDonationDto dto)
+        {
+            var accountIdStr = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
+            if (accountIdStr == null)
+                return Unauthorized("No se puede identificar al usuario.");
+
+            if (!Guid.TryParse(accountIdStr, out Guid senderAccountId))
+                return Unauthorized("Identificador de usuario inválido.");
+
+            var (success, message) = await _transactionService.DonateAsync(senderAccountId, dto.ReceiverAccountId, dto.Amount);
+
+            if (!success)
+                return BadRequest(message);
+
+            return Ok(message);
         }
     }
 }

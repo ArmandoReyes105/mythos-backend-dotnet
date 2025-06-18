@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mythos_backend_dotnet.Data;
 
@@ -11,9 +12,11 @@ using mythos_backend_dotnet.Data;
 namespace mythos_backend_dotnet.Migrations
 {
     [DbContext(typeof(MythosDbContext))]
-    partial class MythosDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250618025416_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,7 +299,7 @@ namespace mythos_backend_dotnet.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("MythrasPackageId")
+                    b.Property<int>("MythrasPackageId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentMethod")
@@ -307,7 +310,7 @@ namespace mythos_backend_dotnet.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SuscriptionPlanId")
+                    b.Property<int>("SuscriptionPlanId")
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
@@ -403,11 +406,15 @@ namespace mythos_backend_dotnet.Migrations
 
                     b.HasOne("mythos_backend_dotnet.Entities.MythrasPackage", "MythrasPackage")
                         .WithMany()
-                        .HasForeignKey("MythrasPackageId");
+                        .HasForeignKey("MythrasPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("mythos_backend_dotnet.Entities.SuscriptionPlan", "SuscriptionPlan")
                         .WithMany()
-                        .HasForeignKey("SuscriptionPlanId");
+                        .HasForeignKey("SuscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Account");
 

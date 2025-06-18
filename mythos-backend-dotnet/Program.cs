@@ -55,7 +55,9 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAccountService, AccountService>(); 
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IMythosTransactionService, MythosTransactionService>();
+builder.Services.AddScoped<IMythrasPurchaseService, MythrasPurchaseService>();
 
 var app = builder.Build();
 

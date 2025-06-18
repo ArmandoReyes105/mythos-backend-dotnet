@@ -13,6 +13,8 @@ namespace mythos_backend_dotnet.Data
         public DbSet<MythrasPackage> MythrasPackages { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<AccountSuscriptionPlan> AccountSuscriptionPlans { get; set; } 
+        public DbSet<MythosWallet> MythosWallets { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
