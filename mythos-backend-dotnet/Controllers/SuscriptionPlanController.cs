@@ -1,24 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using mythos_backend_dotnet.Data;
 using mythos_backend_dotnet.Entities;
+using mythos_backend_dotnet.Models;
+using mythos_backend_dotnet.Services.Interfaces;
 
 namespace mythos_backend_dotnet.Controllers
 {
-    
+
     [Route("api/subscription-plans")]
     [Authorize(Roles = "Admin")]
     [ApiController]
-    public class SuscriptionPlanController : ControllerBase
+    public class SuscriptionPlanController(ISubscriptionService subscriptionService, MythosDbContext _context) : ControllerBase
     {
-        private readonly MythosDbContext _context;
-
-        public SuscriptionPlanController(MythosDbContext context)
-        {
-            _context = context;
-        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -74,6 +69,24 @@ namespace mythos_backend_dotnet.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPost("subscribe")]
+        [Authorize]
+        public async Task<ActionResult> Subscribe([FromBody] SubscribeDto model)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+
+            if (userIdClaim is null) 
+                return Forbid();
+
+            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+                return Unauthorized();
+
+            Console.WriteLine(model.PlanId);
+
+            var result = await subscriptionService.SubscribeToPlanAsync(userId, model.PlanId);
+            return Ok(result);
         }
     }
 }

@@ -2,8 +2,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using mythos_backend_dotnet.Data;
-using mythos_backend_dotnet.Entities;
+using mythos_backend_dotnet.Repositories.Implementations;
+using mythos_backend_dotnet.Repositories.Interfaces;
 using mythos_backend_dotnet.Services;
+using mythos_backend_dotnet.Services.Implementations;
+using mythos_backend_dotnet.Services.Interfaces;
+using mythos_backend_dotnet.UnitOfWork;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,6 +66,13 @@ builder.Services.AddScoped<IMythrasPurchaseService, MythrasPurchaseService>();
 builder.Services.AddScoped<IWithdrawalService, WithdrawalService>();
 builder.Services.AddScoped<IMythosWalletService, MythosWalletService>();
 builder.Services.AddScoped<IMythrasPackageService, MythrasPackageService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IAccountSubscriptionRepository, AccountSubscriptionRepository>();
+builder.Services.AddScoped<IMythosWalletRepository, MythosWalletRepository>(); 
 
 var app = builder.Build();
 
