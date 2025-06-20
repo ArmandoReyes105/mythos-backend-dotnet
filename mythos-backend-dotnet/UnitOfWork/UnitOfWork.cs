@@ -16,6 +16,8 @@ namespace mythos_backend_dotnet.UnitOfWork
         public IMythosWalletRepository MythosWallet { get; }
         public IAccountRepository Accounts { get; }
         public IPersonRepository People { get; }
+        public IPurchaseRepository Purchases { get; }
+        public IMythosTransactionRepository MythosTransactions { get; }
 
         public UnitOfWork(
             MythosDbContext context,
@@ -24,7 +26,9 @@ namespace mythos_backend_dotnet.UnitOfWork
             ITransactionRepository transactionRepository,
             IMythosWalletRepository mythosWalletRepository,
             IAccountRepository accountRepository,
-            IPersonRepository personRepository)
+            IPersonRepository personRepository,
+            IPurchaseRepository purchaseRepository,
+            IMythosTransactionRepository mythosTransactionRepository)
         {
             this._context = context;
             this.Subscriptions = subscriptionRepository;
@@ -33,6 +37,8 @@ namespace mythos_backend_dotnet.UnitOfWork
             this.MythosWallet = mythosWalletRepository;
             this.Accounts = accountRepository;
             this.People = personRepository;
+            this.Purchases = purchaseRepository;
+            this.MythosTransactions = mythosTransactionRepository;
         }
 
         public async Task BeginTransactionAsync()

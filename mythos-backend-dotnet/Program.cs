@@ -68,6 +68,7 @@ builder.Services.AddScoped<IWithdrawalService, WithdrawalService>();
 builder.Services.AddScoped<IMythosWalletService, MythosWalletService>();
 builder.Services.AddScoped<IMythrasPackageService, MythrasPackageService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
@@ -76,6 +77,8 @@ builder.Services.AddScoped<IAccountSubscriptionRepository, AccountSubscriptionRe
 builder.Services.AddScoped<IMythosWalletRepository, MythosWalletRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+builder.Services.AddScoped<IMythosTransactionRepository, MythosTransactionRepository>();
 
 var app = builder.Build();
 

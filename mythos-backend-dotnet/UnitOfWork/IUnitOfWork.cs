@@ -10,6 +10,8 @@ namespace mythos_backend_dotnet.UnitOfWork
         IMythosWalletRepository MythosWallet { get; }
         IAccountRepository Accounts { get; }
         IPersonRepository People { get; }
+        IPurchaseRepository Purchases { get; }
+        IMythosTransactionRepository MythosTransactions { get; }
 
 
         Task BeginTransactionAsync();
