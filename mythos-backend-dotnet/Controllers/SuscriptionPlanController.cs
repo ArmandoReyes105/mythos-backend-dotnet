@@ -10,7 +10,6 @@ namespace mythos_backend_dotnet.Controllers
 {
 
     [Route("api/subscription-plans")]
-    [Authorize(Roles = "Admin")]
     [ApiController]
     public class SuscriptionPlanController(ISubscriptionService subscriptionService, MythosDbContext _context) : ControllerBase
     {

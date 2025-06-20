@@ -33,9 +33,9 @@ namespace mythos_backend_dotnet.Services
         public async Task<Account?> RegisterAsync(CreateAccountRequestDto request)
         {
 
-            if(await context.Accounts.AnyAsync(a => a.Username == request.Username))
+            if (await context.Accounts.AnyAsync(a => a.Username == request.Username))
             {
-                return null; 
+                return null;
             }
 
             var account = new Account();
@@ -45,10 +45,22 @@ namespace mythos_backend_dotnet.Services
 
             account.Username = request.Username;
             account.Email = request.Email;
-            account.Role = "reader"; // Default role, can be changed later
+            account.Role = "reader"; // Default role
             account.PasswordHash = hashedPassword;
 
             context.Accounts.Add(account);
+            await context.SaveChangesAsync(); // Aquí obtienes el ID de la cuenta
+
+            // Crear la cartera para el nuevo usuario
+            var wallet = new MythosWallet
+            {
+                UserId = account.Id,
+                MythrasBalance = 100, // Saldo inicial, puedes ajustarlo
+                IsLocked = false,
+                LastUpdated = DateTime.UtcNow
+            };
+
+            context.MythosWallets.Add(wallet);
             await context.SaveChangesAsync();
 
             return account;
@@ -66,8 +78,8 @@ namespace mythos_backend_dotnet.Services
         {
             var user = await context.Accounts.FindAsync(userId);
 
-            if(user is null ||
-                user.RefreshToken != refreshToken || 
+            if (user is null ||
+                user.RefreshToken != refreshToken ||
                 user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 return null;
