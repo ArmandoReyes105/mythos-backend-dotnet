@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using mythos_backend_dotnet.Data;
+using mythos_backend_dotnet.Middleware;
 using mythos_backend_dotnet.Repositories.Implementations;
 using mythos_backend_dotnet.Repositories.Interfaces;
 using mythos_backend_dotnet.Services;
@@ -18,7 +19,7 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<MythosDbContext>(options => 
+builder.Services.AddDbContext<MythosDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MythosDatabase")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -53,8 +54,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowDotnetFrontend", policy =>
     {
-        policy.WithOrigins("https://localhost:7133", "http://localhost:3000" ).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
-        
+        policy.WithOrigins("https://localhost:7133", "http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+
 
     });
 });
@@ -72,7 +73,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IAccountSubscriptionRepository, AccountSubscriptionRepository>();
-builder.Services.AddScoped<IMythosWalletRepository, MythosWalletRepository>(); 
+builder.Services.AddScoped<IMythosWalletRepository, MythosWalletRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 
 var app = builder.Build();
 
@@ -85,6 +88,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowDotnetFrontend");
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

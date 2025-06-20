@@ -8,11 +8,14 @@ namespace mythos_backend_dotnet.UnitOfWork
         IAccountSubscriptionRepository AccountSubscriptions { get; }
         ITransactionRepository Transactions { get; }
         IMythosWalletRepository MythosWallet { get; }
+        IAccountRepository Accounts { get; }
+        IPersonRepository People { get; }
 
 
         Task BeginTransactionAsync();
         Task CommitTransactionAsync();
         Task RollbackTransactionAsync();
         Task<int> SaveAsync();
+        Task ExecuteInTransactionAsync(Func<Task> action);
     }
 }

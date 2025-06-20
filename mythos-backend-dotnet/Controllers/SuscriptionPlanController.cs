@@ -77,13 +77,11 @@ namespace mythos_backend_dotnet.Controllers
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
 
-            if (userIdClaim is null) 
+            if (userIdClaim is null)
                 return Forbid();
 
             if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
                 return Unauthorized();
-
-            Console.WriteLine(model.PlanId);
 
             var result = await subscriptionService.SubscribeToPlanAsync(userId, model.PlanId);
             return Ok(result);

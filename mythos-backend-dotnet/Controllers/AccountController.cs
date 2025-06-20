@@ -70,5 +70,18 @@ namespace mythos_backend_dotnet.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("become-writer")]
+        public async Task<IActionResult> BecomeWriter([FromBody] PersonDto dto)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            if (userIdClaim is null)
+                return Unauthorized("No se encontró el ID de la cuenta en el token");
+
+            var accountId = Guid.Parse(userIdClaim.Value);
+            var response = await accountService.BecomeWriterAsync(accountId, dto);
+
+            return Ok(response);
+        }
     }
 }

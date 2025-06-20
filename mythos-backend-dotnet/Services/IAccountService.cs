@@ -8,5 +8,6 @@ namespace mythos_backend_dotnet.Services
         Task<AccountResponseDto?> GetAccountByAccessTokenCookieAsync(Guid id);
         Task<EditProfileRequestDto?> UpdateAccountAsync(Guid id, EditProfileRequestDto model);
         Task<bool> ChangePasswordAsync(Guid id, ChangePasswordRequest request);
+        Task<BecomeWriterResponse> BecomeWriterAsync(Guid accountId, PersonDto dto);
     }
 }

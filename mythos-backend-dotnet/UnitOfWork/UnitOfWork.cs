@@ -7,26 +7,32 @@ namespace mythos_backend_dotnet.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly MythosDbContext _context; 
+        private readonly MythosDbContext _context;
         private IDbContextTransaction? _transaction;
 
         public ISubscriptionPlanRepository Subscriptions { get; }
         public IAccountSubscriptionRepository AccountSubscriptions { get; }
         public ITransactionRepository Transactions { get; }
         public IMythosWalletRepository MythosWallet { get; }
+        public IAccountRepository Accounts { get; }
+        public IPersonRepository People { get; }
 
         public UnitOfWork(
             MythosDbContext context,
             ISubscriptionPlanRepository subscriptionRepository,
             IAccountSubscriptionRepository accountSubscriptionRepository,
             ITransactionRepository transactionRepository,
-            IMythosWalletRepository mythosWalletRepository)
+            IMythosWalletRepository mythosWalletRepository,
+            IAccountRepository accountRepository,
+            IPersonRepository personRepository)
         {
             this._context = context;
             this.Subscriptions = subscriptionRepository;
             this.AccountSubscriptions = accountSubscriptionRepository;
             this.Transactions = transactionRepository;
-            this.MythosWallet = mythosWalletRepository; 
+            this.MythosWallet = mythosWalletRepository;
+            this.Accounts = accountRepository;
+            this.People = personRepository;
         }
 
         public async Task BeginTransactionAsync()
@@ -41,7 +47,7 @@ namespace mythos_backend_dotnet.UnitOfWork
 
             await _transaction.CommitAsync();
             await _transaction.DisposeAsync();
-            _transaction = null; 
+            _transaction = null;
         }
 
         public async Task RollbackTransactionAsync()
@@ -51,12 +57,28 @@ namespace mythos_backend_dotnet.UnitOfWork
 
             await _transaction.RollbackAsync();
             await _transaction.DisposeAsync();
-            _transaction = null; 
+            _transaction = null;
         }
 
         public async Task<int> SaveAsync()
         {
-            return await _context.SaveChangesAsync(); 
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task ExecuteInTransactionAsync(Func<Task> action)
+        {
+            await BeginTransactionAsync();
+
+            try
+            {
+                await action();
+                await CommitTransactionAsync();
+            }
+            catch
+            {
+                await RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public void Dispose()
