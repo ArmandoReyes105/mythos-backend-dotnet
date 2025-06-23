@@ -29,7 +29,6 @@ namespace mythos_backend_dotnet.Services
 
             return await CreateTokenResponse(user);
         }
-
         public async Task<Account?> RegisterAsync(CreateAccountRequestDto request)
         {
 
@@ -94,7 +93,6 @@ namespace mythos_backend_dotnet.Services
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-
         private async Task<string> GenerateAndSaveRefreshTokenAsync(Account user)
         {
             var refreshToken = GenerateRefreshToken();
@@ -104,7 +102,6 @@ namespace mythos_backend_dotnet.Services
             await context.SaveChangesAsync();
             return refreshToken;
         }
-
         private async Task<TokenResponseDto> CreateTokenResponse(Account user)
         {
             return new TokenResponseDto
