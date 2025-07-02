@@ -33,8 +33,8 @@ namespace mythos_backend_dotnet.Controllers
             var accessTokenOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(1)
             };
 
