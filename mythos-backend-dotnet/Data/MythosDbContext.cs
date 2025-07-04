@@ -12,7 +12,7 @@ namespace mythos_backend_dotnet.Data
         public DbSet<SuscriptionPlan> SuscriptionPlans { get; set; }
         public DbSet<MythrasPackage> MythrasPackages { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<AccountSuscriptionPlan> AccountSuscriptionPlans { get; set; } 
+        public DbSet<AccountSuscriptionPlan> AccountSuscriptionPlans { get; set; }
         public DbSet<MythosWallet> MythosWallets { get; set; }
         public DbSet<Withdrawal> Withdrawals { get; set; }
 
@@ -45,6 +45,78 @@ namespace mythos_backend_dotnet.Data
                 .WithMany()
                 .HasForeignKey(usp => usp.SuscriptionPlanId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            // Seeding de planes de suscripción
+            modelBuilder.Entity<SuscriptionPlan>().HasData(
+                new SuscriptionPlan
+                {
+                    SuscriptionPlanId = 1,
+                    Name = "Plan Básico",
+                    Price = 49.00m,
+                    DurationDays = 30,
+                    MythrasMonthlyBonus = 100,
+                    ExtraBenefits = "Lecturas limitadas",
+                    IsActive = true,
+                    CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new SuscriptionPlan
+                {
+                    SuscriptionPlanId = 2,
+                    Name = "Plan Estándar",
+                    Price = 99.00m,
+                    DurationDays = 30,
+                    MythrasMonthlyBonus = 250,
+                    ExtraBenefits = "Lecturas y soporte",
+                    IsActive = true,
+                    CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new SuscriptionPlan
+                {
+                    SuscriptionPlanId = 3,
+                    Name = "Plan Premium",
+                    Price = 149.00m,
+                    DurationDays = 30,
+                    MythrasMonthlyBonus = 500,
+                    ExtraBenefits = "Todo ilimitado",
+                    IsActive = true,
+                    CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
+
+            // Seeding de paquetes de Mythras
+            modelBuilder.Entity<MythrasPackage>().HasData(
+                new MythrasPackage
+                {
+                    MythrasPackageId = 1,
+                    Name = "Paquete Chico",
+                    MythrasAmount = 100,
+                    Price = 99.00m,
+                    BonusMythras = 0,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new MythrasPackage
+                {
+                    MythrasPackageId = 2,
+                    Name = "Paquete Mediano",
+                    MythrasAmount = 200,
+                    Price = 199.00m,
+                    BonusMythras = 50,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new MythrasPackage
+                {
+                    MythrasPackageId = 3,
+                    Name = "Paquete Grande",
+                    MythrasAmount = 400,
+                    Price = 399.00m,
+                    BonusMythras = 100,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
 
             base.OnModelCreating(modelBuilder);
         }

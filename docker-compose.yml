@@ -1,0 +1,25 @@
+services:
+  mythos-backend-dotnet:
+    image: ${DOCKER_REGISTRY-}mythosbackenddotnet
+    build:
+      context: .
+      dockerfile: mythos-backend-dotnet/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MythosDatabase=Server=mythos-db;Database=MythosDB;User=sa;Password=MythosDB3010;TrustServerCertificate=True;Encrypt=False;
+      - AppSettings__Token=TyLMcWmzTwCMXwhCQDNxPrTqNcQtxUVdbgSLavLmxWLFKRGkXgrGcnTcCRFbHwGy
+      - AppSettings__Issuer=MythosAPI
+      - AppSettings__Audience=MythosAudience
+    depends_on:
+      - mythos-db
+
+  mythos-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Mythos.DB
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "MythosDB3010"
