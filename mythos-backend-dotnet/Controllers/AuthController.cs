@@ -33,8 +33,8 @@ namespace mythos_backend_dotnet.Controllers
             var accessTokenOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Strict,
+                Secure = true,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(1)
             };
 
@@ -112,6 +112,17 @@ namespace mythos_backend_dotnet.Controllers
         public IActionResult AdminOnlyEndpoint()
         {
             return Ok("You are an admin!");
+        }
+
+        [HttpPost("login-raw")]
+        public async Task<ActionResult<TokenResponseDto>> LoginRaw(AccountDto request)
+        {
+            var response = await authService.LoginAsync(request);
+
+            if (response is null)
+                return BadRequest("Invalid username or password.");
+
+            return Ok(response);
         }
     }
 }

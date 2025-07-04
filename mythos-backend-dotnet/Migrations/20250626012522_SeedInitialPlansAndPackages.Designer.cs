@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mythos_backend_dotnet.Data;
 
@@ -11,9 +12,11 @@ using mythos_backend_dotnet.Data;
 namespace mythos_backend_dotnet.Migrations
 {
     [DbContext(typeof(MythosDbContext))]
-    partial class MythosDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250626012522_SeedInitialPlansAndPackages")]
+    partial class SeedInitialPlansAndPackages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,7 +180,7 @@ namespace mythos_backend_dotnet.Migrations
                         {
                             MythrasPackageId = 1,
                             BonusMythras = 0,
-                            CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 6, 26, 1, 25, 19, 645, DateTimeKind.Utc).AddTicks(8732),
                             IsActive = true,
                             MythrasAmount = 100,
                             Name = "Paquete Chico",
@@ -187,7 +190,7 @@ namespace mythos_backend_dotnet.Migrations
                         {
                             MythrasPackageId = 2,
                             BonusMythras = 50,
-                            CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 6, 26, 1, 25, 19, 645, DateTimeKind.Utc).AddTicks(8880),
                             IsActive = true,
                             MythrasAmount = 200,
                             Name = "Paquete Mediano",
@@ -197,7 +200,7 @@ namespace mythos_backend_dotnet.Migrations
                         {
                             MythrasPackageId = 3,
                             BonusMythras = 100,
-                            CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 6, 26, 1, 25, 19, 645, DateTimeKind.Utc).AddTicks(8882),
                             IsActive = true,
                             MythrasAmount = 400,
                             Name = "Paquete Grande",
@@ -313,7 +316,7 @@ namespace mythos_backend_dotnet.Migrations
                         new
                         {
                             SuscriptionPlanId = 1,
-                            CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 6, 26, 1, 25, 19, 645, DateTimeKind.Utc).AddTicks(1522),
                             DurationDays = 30,
                             ExtraBenefits = "Lecturas limitadas",
                             IsActive = true,
@@ -324,7 +327,7 @@ namespace mythos_backend_dotnet.Migrations
                         new
                         {
                             SuscriptionPlanId = 2,
-                            CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 6, 26, 1, 25, 19, 645, DateTimeKind.Utc).AddTicks(1679),
                             DurationDays = 30,
                             ExtraBenefits = "Lecturas y soporte",
                             IsActive = true,
@@ -335,7 +338,7 @@ namespace mythos_backend_dotnet.Migrations
                         new
                         {
                             SuscriptionPlanId = 3,
-                            CreatedAt = new DateTime(2025, 6, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 6, 26, 1, 25, 19, 645, DateTimeKind.Utc).AddTicks(1681),
                             DurationDays = 30,
                             ExtraBenefits = "Todo ilimitado",
                             IsActive = true,
