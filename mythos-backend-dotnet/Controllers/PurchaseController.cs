@@ -87,7 +87,7 @@ namespace mythos_backend_dotnet.Controllers
             if (!Guid.TryParse(userIdClaim.Value, out var userId))
                 return Unauthorized("Id de usuario inválido");
 
-            var (success, message, newBalance) = await _purchaseService.PurchaseContentAsync(userId, request.ContentId, request.Price);
+            var (success, message, newBalance) = await _purchaseService.PurchaseContentAsync(userId, request);
 
             if (!success)
                 return BadRequest(new { success = false, message, newBalance });

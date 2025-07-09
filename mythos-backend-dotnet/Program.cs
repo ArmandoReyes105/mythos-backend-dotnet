@@ -68,8 +68,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.WebHost.UseUrls("http://0.0.0.0:5000");
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IMythosTransactionService, MythosTransactionService>();
