@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace mythos_backend_dotnet.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/mythos-transactions")]
     [ApiController]
     public class MythosTransactionController : ControllerBase
     {
@@ -88,5 +88,84 @@ namespace mythos_backend_dotnet.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("received")]
+        [Authorize]
+        public async Task<IActionResult> GetReceivedTransactions()
+        {
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            if (accountIdClaim == null)
+                return Unauthorized("No se encontró el ID en el token");
+
+            if (!Guid.TryParse(accountIdClaim.Value, out var userId))
+                return BadRequest("El ID de cuenta en el token no es válido");
+
+            var transactions = await _context.MythosTransactions
+                .Where(x => x.CounterpartyAccountId == userId)
+                .Select(t => new
+                {
+                    t.MythosTransactionId,
+                    t.Type,
+                    t.Amount,
+                    t.CreatedAt,
+                    t.AccountId,
+                    t.CounterpartyAccountId
+                })
+                .ToListAsync();
+
+            return Ok(transactions);
+        }
+
+        [HttpGet("sent")]
+        [Authorize]
+        public async Task<IActionResult> GetSentTransactions()
+        {
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "accountId");
+            if (accountIdClaim == null)
+                return Unauthorized("No se encontró el ID en el token");
+
+            if (!Guid.TryParse(accountIdClaim.Value, out var userId))
+                return BadRequest("El ID de cuenta en el token no es válido");
+
+            var transactions = await _context.MythosTransactions
+                .Where(x => x.AccountId == userId)
+                .Select(t => new
+                {
+                    t.MythosTransactionId,
+                    t.Type,
+                    t.Amount,
+                    t.CreatedAt,
+                    t.AccountId,
+                    t.CounterpartyAccountId
+                })
+                .ToListAsync();
+
+            return Ok(transactions);
+        }
+
+        [HttpGet("by-chapter/{chapterId}")]
+        [Authorize]
+        public async Task<IActionResult> GetPurchasesByChapterId(string chapterId)
+        {
+            if (string.IsNullOrWhiteSpace(chapterId))
+                return BadRequest("El ID del capítulo es requerido.");
+
+            var purchases = await _context.Purchases
+                .Where(p => p.ContentId == chapterId)
+                .Select(p => new
+                {
+                    p.PurchaseId,
+                    p.AccountId,
+                    p.ContentId,
+                    p.MythrasPrice,
+                    p.PurchaseDate,
+                    p.MythosTransactionId
+                })
+                .ToListAsync();
+
+            return Ok(purchases);
+        }
+
+
     }
 }

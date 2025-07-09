@@ -1,5 +1,6 @@
 using System;
 using mythos_backend_dotnet.Entities;
+using mythos_backend_dotnet.Models;
 using mythos_backend_dotnet.Services.Interfaces;
 using mythos_backend_dotnet.UnitOfWork;
 
@@ -12,56 +13,73 @@ public class PurchaseService(IUnitOfWork _unitOfWork) : IPurchaseService
         return await _unitOfWork.Purchases.GetPurchasedContentIdsByAccountIdAsync(accountId);
     }
 
-    public async Task<(bool Success, string Message, int? NewBalance)> PurchaseContentAsync(Guid userId, string contentId, int price)
+    public async Task<(bool Success, string Message, int? NewBalance)> PurchaseContentAsync(Guid userId, PurchaseRequestDto request)
     {
-        // 1. Obtener wallet
         var wallet = await _unitOfWork.MythosWallet.GetByUserIdAsync(userId);
+
         if (wallet == null)
             return (false, "Wallet no encontrada", null);
 
         if (wallet.IsLocked)
             return (false, "La wallet está bloqueada", null);
 
-        // 2. Verificar saldo
-        if (wallet.MythrasBalance < price)
+        if (wallet.MythrasBalance < request.Price)
             return (false, "Fondos insuficientes", wallet.MythrasBalance);
 
-        // 3. Verificar si ya compró ese contenido
-        var alreadyPurchased = await _unitOfWork.Purchases.ExistsAsync(p => p.AccountId == userId && p.ContentId == contentId);
-        if (alreadyPurchased)
+        if (!Guid.TryParse(request.WriterId, out var writerId))
+            return (false, "ID del escritor inválido", null);
+
+        if (await _unitOfWork.Purchases.ExistsAsync(p => p.AccountId == userId && p.ContentId == request.ContentId))
             return (true, "Contenido ya comprado", wallet.MythrasBalance);
 
-        // 4. Crear transacción (simplificado)
-        var transaction = new MythosTransaction
+        var writerWallet = await _unitOfWork.MythosWallet.GetByUserIdAsync(writerId);
+
+        var buyerTransaction = new MythosTransaction
         {
             AccountId = userId,
-            CounterpartyAccountId = userId, // <-- Asignar el mismo userId o un account válido aquí
-            Amount = price,
+            CounterpartyAccountId = writerId,
+            Amount = request.Price,
             CreatedAt = DateTime.UtcNow,
             Type = Enums.MythosTransactionType.PurchaseMade
         };
-        await _unitOfWork.MythosTransactions.AddAsync(transaction);
-        await _unitOfWork.SaveAsync();
 
-        // 5. Crear purchase
+        var writerTransaction = new MythosTransaction
+        {
+            AccountId = writerId,
+            CounterpartyAccountId = userId,
+            Amount = request.Price,
+            CreatedAt = DateTime.UtcNow,
+            Type = Enums.MythosTransactionType.PurchaseReceived
+        };
+
+        await _unitOfWork.MythosTransactions.AddAsync(buyerTransaction);
+        await _unitOfWork.MythosTransactions.AddAsync(writerTransaction);
+
         var purchase = new Purchase
         {
             AccountId = userId,
-            ContentId = contentId,
-            MythrasPrice = price,
+            ContentId = request.ContentId,
+            MythrasPrice = request.Price,
             PurchaseDate = DateTime.UtcNow,
-            MythosTransactionId = transaction.MythosTransactionId,
-            MythosTransaction = transaction
+            MythosTransaction = buyerTransaction
         };
+
         await _unitOfWork.Purchases.AddAsync(purchase);
 
-        // 6. Descontar Mythras
-        wallet.MythrasBalance -= price;
+        wallet.MythrasBalance -= request.Price;
         wallet.LastUpdated = DateTime.UtcNow;
         _unitOfWork.MythosWallet.Update(wallet);
+
+        if (writerWallet is not null)
+        {
+            writerWallet.MythrasBalance += request.Price;
+            writerWallet.LastUpdated = DateTime.UtcNow;
+            _unitOfWork.MythosWallet.Update(writerWallet);
+        }
 
         await _unitOfWork.SaveAsync();
 
         return (true, "Compra exitosa", wallet.MythrasBalance);
     }
+
 }

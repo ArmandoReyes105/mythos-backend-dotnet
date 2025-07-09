@@ -1,9 +1,10 @@
 services:
   mythos-backend-dotnet:
-    image: ${DOCKER_REGISTRY-}mythosbackenddotnet
+    #image: ${DOCKER_REGISTRY-}mythosbackenddotnet
     build:
       context: .
       dockerfile: mythos-backend-dotnet/Dockerfile
+    image: mythos-backend-dotnet
     ports:
       - "8080:8080"
     environment:
