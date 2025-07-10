@@ -2,6 +2,7 @@ using System;
 using mythos_backend_dotnet.Data;
 using mythos_backend_dotnet.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using mythos_backend_dotnet.Models;
 using mythos_backend_dotnet.Entities;
 using System.Linq.Expressions;
 
@@ -25,4 +26,22 @@ public class PurchaseRepository(MythosDbContext _context) : IPurchaseRepository
     {
         return await _context.Purchases.AnyAsync(predicate);
     }
+
+    public async Task<List<PurchaseStatisticsDto>> GetPurchaseStatisticsAsync(DateTime startDate, DateTime endDate)
+    {
+        endDate = endDate.Date.AddDays(1).AddTicks(-1);
+
+        return await _context.Purchases
+            .Where(p => p.PurchaseDate >= startDate && p.PurchaseDate <= endDate)
+            .GroupBy(p => p.ContentId)
+            .Select(g => new PurchaseStatisticsDto
+            {
+                ContentId = g.Key,
+                TotalPurchases = g.Count(),
+                TotalMythras = g.Sum(p => p.MythrasPrice),
+                PricePerPurchase = g.First().MythrasPrice
+            })
+            .ToListAsync();
+    }
+
 }

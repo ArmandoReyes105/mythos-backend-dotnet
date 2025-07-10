@@ -82,4 +82,10 @@ public class PurchaseService(IUnitOfWork _unitOfWork) : IPurchaseService
         return (true, "Compra exitosa", wallet.MythrasBalance);
     }
 
+    public async Task<List<PurchaseStatisticsDto>> GetPurchaseStatisticsAsync(DateTime startDate, DateTime endDate)
+    {
+        return await _unitOfWork.Purchases.GetPurchaseStatisticsAsync(startDate, endDate);
+    }
+
+
 }

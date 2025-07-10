@@ -13,6 +13,12 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(5000); // HTTP
+    // serverOptions.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps()); // Si quisieras HTTPS también
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -67,6 +73,8 @@ builder.Services.AddCors(options =>
 
     });
 });
+
+
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
