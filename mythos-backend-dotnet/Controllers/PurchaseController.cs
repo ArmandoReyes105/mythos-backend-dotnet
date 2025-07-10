@@ -94,5 +94,19 @@ namespace mythos_backend_dotnet.Controllers
 
             return Ok(new { success = true, message, newBalance });
         }
+
+        [HttpGet("statistics-author")]
+        public async Task<IActionResult> GetPurchaseStats(
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate)
+        {
+            if (startDate > endDate)
+                return BadRequest("La fecha de inicio no puede ser posterior a la fecha de fin.");
+
+            var stats = await _purchaseService.GetPurchaseStatisticsAsync(startDate, endDate);
+            return Ok(stats);
+        }
     }
+
+
 }
